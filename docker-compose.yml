@@ -26,11 +26,5 @@ services:
     ports:
       - "5432:5432"
 
-  frontend:
-    build: ./frontend
-    ports:
-      - "8080:80"
-
-
 volumes:
   pgdata:
