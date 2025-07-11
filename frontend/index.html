@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Tracker</title>
+</head>
+<body>
+  <h1>Task Tracker</h1>
+
+  <form id="task-form">
+    <input type="text" id="title" placeholder="Enter task title" required />
+    <button type="submit">Add Task</button>
+  </form>
+
+  <ul id="task-list"></ul>
+
+  <script>
+    const form = document.getElementById('task-form');
+    const titleInput = document.getElementById('title');
+    const taskList = document.getElementById('task-list');
+
+    // Load all tasks
+    const loadTasks = async () => {
+      const res = await fetch('http://localhost:3000/tasks');
+      const tasks = await res.json();
+      taskList.innerHTML = '';
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.textContent = task.title;
+        li.setAttribute('data-id', task.id);
+        li.addEventListener('click', async () => {
+          await fetch(`http://localhost:3000/tasks/${task.id}`, {
+            method: 'DELETE'
+          });
+          loadTasks();
+        });
+        taskList.appendChild(li);
+      });
+    };
+
+    // Add new task
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = titleInput.value;
+      await fetch('http://localhost:3000/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title })
+      });
+      titleInput.value = '';
+      loadTasks();
+    });
+
+    loadTasks();
+  </script>
+</body>
+</html>
