@@ -1,19 +1,6 @@
-version: '3.8'
+
 
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-    environment:
-      - PGHOST=db
-      - PGUSER=postgres
-      - PGPASSWORD=postgres
-      - PGDATABASE=tasksdb
-      - PGPORT=5432
-  
   db:
     image: postgres:13
     restart: always
@@ -26,5 +13,33 @@ services:
     ports:
       - "5432:5432"
 
-volumes:
-  pgdata:
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    environment:
+      - PGHOST=db
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGDATABASE=tasksdb
+      - PGPORT=5432
+
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  cypress:
+    build: ./cypress
+    depends_on:
+      - frontend
+    environment:
+      - CYPRESS_baseUrl=http://frontend
+    networks:
+      - default
