@@ -1,7 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Task Tracker</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    #task-form {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    #title {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 300px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #task-list {
+      list-style-type: none;
+      padding: 0;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    #task-list li {
+      background-color: white;
+      margin-bottom: 0.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    #task-list li:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
 </head>
 <body>
   <h1>Task Tracker</h1>
@@ -19,11 +88,14 @@
     const taskList = document.getElementById('task-list');
 
     // 👇 Dynamic backend hostname (Docker = "backend", browser = "localhost")
-    const backendHost = window.location.hostname === 'localhost' ? 'localhost' : 'backend';
+    //const backendHost = window.location.hostname === 'localhost' ? 'localhost' : 'backend';
+
+    const backendHost = 'task-tracker-production-69cf.up.railway.app';
+
 
     // Load all tasks
     const loadTasks = async () => {
-      const res = await fetch(`http://${backendHost}:3000/tasks`);
+      const res = await fetch(`https://${backendHost}/tasks`);
       const tasks = await res.json();
       taskList.innerHTML = '';
       tasks.forEach(task => {
@@ -31,7 +103,7 @@
         li.textContent = task.title;
         li.setAttribute('data-id', task.id);
         li.addEventListener('click', async () => {
-          await fetch(`http://${backendHost}:3000/tasks/${task.id}`, {
+          await fetch(`https://${backendHost}/tasks/${task.id}`, {
             method: 'DELETE'
           });
           loadTasks();
@@ -44,7 +116,7 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = titleInput.value;
-      await fetch(`http://${backendHost}:3000/tasks`, {
+      await fetch(`https://${backendHost}/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
